@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คำนวณราคางานพิมพ์ — สยามพิมพ์นานา</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: #F7F5F2; color: #1a1a1a; min-height: 100vh; }
+  
+  header { background: #1B3A6B; color: #fff; padding: 1.25rem 1.5rem; }
+  header h1 { font-size: 18px; font-weight: 600; }
+  header p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
+
+  .container { max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+  .card { background: #fff; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid #E5E3DF; }
+
+  label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; }
+  select, input[type=number] {
+    width: 100%; padding: 10px 12px; border: 1px solid #DDD; border-radius: 8px;
+    font-size: 15px; font-family: inherit; background: #fff; color: #1a1a1a;
+    appearance: none; -webkit-appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  input[type=number]:focus, select:focus { outline: 2px solid #1B3A6B; border-color: transparent; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group:last-child { margin-bottom: 0; }
+
+  .spec-box { font-size: 12px; color: #888; background: #F7F5F2; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+
+  .result { background: #1B3A6B; color: #fff; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .result-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; }
+  .result-row:last-of-type { border-bottom: none; }
+  .result-label { opacity: 0.7; }
+  .result-value { font-weight: 500; }
+  .total-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.25); display: flex; justify-content: space-between; align-items: flex-end; }
+  .total-label { font-size: 14px; opacity: 0.8; }
+  .total-price { font-size: 28px; font-weight: 700; }
+  .unit-price { font-size: 12px; opacity: 0.6; margin-top: 2px; text-align: right; }
+
+  .note { font-size: 12px; color: #888; padding: 10px 12px; background: #FFF8EC; border-radius: 8px; border-left: 3px solid #F0A500; margin-bottom: 1rem; }
+
+  .cta-btn { display: block; width: 100%; padding: 14px; background: #F0A500; color: #1a1a1a; font-size: 15px; font-weight: 600; border: none; border-radius: 10px; text-align: center; text-decoration: none; cursor: pointer; font-family: inherit; }
+  .cta-btn:hover { background: #D99400; }
+
+  .contact-card { background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid #E5E3DF; margin-top: 1rem; }
+  .contact-card h3 { font-size: 14px; color: #666; margin-bottom: 10px; }
+  .contact-row { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+  .contact-row:last-child { margin-bottom: 0; }
+  .contact-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  @media (max-width: 480px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <h1>🖨️ สยามพิมพ์นานา</h1>
+  <p>คำนวณราคางานพิมพ์เบื้องต้น</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="form-group">
+      <label>ประเภทสิ่งพิมพ์</label>
+      <select id="type" onchange="updateForm()">
+        <optgroup label="📄 งานออฟเซ็ท">
+          <option value="book_a4">หนังสือ / แค็ตตาล็อก A4</option>
+          <option value="book_a5">หนังสือ / แค็ตตาล็อก A5</option>
+          <option value="namecard">นามบัตร (9×5.5 ซม.)</option>
+          <option value="flyer_a5">ใบปลิว A5</option>
+          <option value="flyer_a4">ใบปลิว A4</option>
+          <option value="brochure">แผ่นพับ A4 (3 ตอน)</option>
+          <option value="poster_a3">โปสเตอร์ A3</option>
+          <option value="label">ฉลากสินค้า</option>
+        </optgroup>
+        <optgroup label="🖥️ งานออนดีมานด์">
+          <option value="sticker">สติ๊กเกอร์ตัดรูป</option>
+          <option value="banner">แบนเนอร์ไวนิล</option>
+        </optgroup>
+        <optgroup label="🎨 งานซิลก์สกรีน">
+          <option value="tshirt">เสื้อยืดสกรีน</option>
+          <option value="bag">ถุงผ้าสกรีน</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div id="extra-fields"></div>
+
+    <div id="main-fields">
+      <div class="form-row">
+        <div class="form-group" id="qty-group">
+          <label id="qty-label">จำนวน</label>
+          <input type="number" id="qty" value="100" min="1" oninput="calculate()" />
+        </div>
+        <div class="form-group" id="color-group">
+          <label>จำนวนสี</label>
+          <select id="color" onchange="calculate()">
+            <option value="4">4 สี (เต็มสี)</option>
+            <option value="1">1 สี (ขาวดำ)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="spec-box" class="spec-box"></div>
+  </div>
+
+  <div id="result-area"></div>
+
+  <div class="contact-card">
+    <h3>📞 ติดต่อสอบถาม</h3>
+    <div class="contact-row"><span class="contact-icon">📱</span><span>081-8836720 / 086-9112338</span></div>
+    <div class="contact-row"><span class="contact-icon">💬</span><span>LINE: @siampimnana</span></div>
+    <div class="contact-row"><span class="contact-icon">🌐</span><a href="https://www.siampimnana.com" style="color:#1B3A6B;">www.siampimnana.com</a></div>
+    <div class="contact-row"><span class="contact-icon">⏰</span><span>จันทร์-เสาร์ 08:30-17:30 น.</span></div>
+  </div>
+
+</div>
+
+<script>
+const prices = {
+  namecard: { label:'นามบัตร', unit:'ชุด (100 ใบ)', tiers:[[100,500],[200,600],[500,900],[1000,1500],[2000,2500],[5000,5500]], spec:'กระดาษอาร์ต 350g พิมพ์ 4 สี ขนาด 9×5.5 ซม.' },
+  flyer_a5: { label:'ใบปลิว A5', unit:'แผ่น', tiers:[[500,1200],[1000,1800],[2000,2800],[5000,5500],[10000,9500]], spec:'กระดาษอาร์ต 130g 4 สี 2 หน้า ขนาด 21×14.8 ซม.' },
+  flyer_a4: { label:'ใบปลิว A4', unit:'แผ่น', tiers:[[500,1800],[1000,2500],[2000,3800],[5000,7000],[10000,12000]], spec:'กระดาษอาร์ต 130g 4 สี 2 หน้า ขนาด 29.7×21 ซม.' },
+  brochure: { label:'แผ่นพับ A4 3 ตอน', unit:'แผ่น', tiers:[[500,2500],[1000,3500],[2000,5500],[5000,11000]], spec:'กระดาษอาร์ต 150g 4 สี 2 หน้า พับ 3 ตอน' },
+  poster_a3: { label:'โปสเตอร์ A3', unit:'แผ่น', tiers:[[100,1500],[500,3500],[1000,5500],[2000,9000]], spec:'กระดาษอาร์ต 150g 4 สี ขนาด 29.7×42 ซม.' },
+  label: { label:'ฉลากสินค้า', unit:'ชิ้น', tiers:[[1000,1500],[5000,4500],[10000,7500]], spec:'กระดาษสติ๊กเกอร์ 4 สี กำหนดขนาดเอง' },
+  sticker: { label:'สติ๊กเกอร์ตัดรูป', unit:'ชิ้น', tiers:[[10,400],[50,1500],[100,2500],[500,8000]], spec:'กระดาษ PVC กันน้ำ ตัดรูปตามแบบ ขนาดไม่เกิน A4' },
+  tshirt: { label:'เสื้อยืดสกรีน', unit:'ตัว', tiers:[[12,3600],[24,6000],[50,10000],[100,18000]], spec:'Cotton 100% สกรีน 1 สี ราคารวมค่าเสื้อ' },
+  bag: { label:'ถุงผ้าสกรีน', unit:'ใบ', tiers:[[50,4500],[100,7000],[200,12000]], spec:'Canvas สกรีน 1 สี ขนาด 35×40 ซม.' },
+};
+
+function interp(tiers, qty) {
+  if (qty <= tiers[0][0]) return tiers[0][1];
+  if (qty >= tiers[tiers.length-1][0]) {
+    const last = tiers[tiers.length-1], prev = tiers[tiers.length-2];
+    return Math.round(last[1] + ((last[1]-prev[1])/(last[0]-prev[0])) * (qty - last[0]));
+  }
+  for (let i = 0; i < tiers.length-1; i++) {
+    if (qty >= tiers[i][0] && qty <= tiers[i+1][0]) {
+      const r = (qty - tiers[i][0]) / (tiers[i+1][0] - tiers[i][0]);
+      return Math.round(tiers[i][1] + r * (tiers[i+1][1] - tiers[i][1]));
+    }
+  }
+}
+
+function lineUrl(msg) {
+  return 'https://line.me/R/oaMessage/@siampimnana/?'+encodeURIComponent(msg);
+}
+
+function showResult(rows, total, unitTxt, note, lineMsg) {
+  let rowsHtml = rows.map(r => `<div class="result-row"><span class="result-label">${r[0]}</span><span class="result-value">${r[1]}</span></div>`).join('');
+  document.getElementById('result-area').innerHTML = `
+    <div class="result">
+      ${rowsHtml}
+      <div class="total-section">
+        <span class="total-label">ราคารวม (ประมาณ)</span>
+        <div style="text-align:right">
+          <div class="total-price">${total.toLocaleString()} บาท</div>
+          <div class="unit-price">${unitTxt}</div>
+        </div>
+      </div>
+    </div>
+    <div class="note">⚠️ ราคาประมาณการเบื้องต้น ยังไม่รวมค่าออกแบบ ราคาจริงขึ้นอยู่กับรายละเอียดงาน</div>
+    <a class="cta-btn" href="${lineUrl(lineMsg)}">💬 ส่งข้อความขอใบเสนอราคาจริง</a>
+  `;
+}
+
+function calculate() {
+  const type = document.getElementById('type').value;
+  if (type === 'book_a4' || type === 'book_a5') { calcBook(); return; }
+  if (type === 'banner') { calcBanner(); return; }
+  const p = prices[type]; if (!p) return;
+  const qty = parseInt(document.getElementById('qty').value) || 0; if (qty < 1) return;
+  const color = document.getElementById('color') ? document.getElementById('color').value : '4';
+  const mult = (color === '1' && type !== 'tshirt' && type !== 'bag') ? 0.75 : 1;
+  const total = Math.round(interp(p.tiers, qty) * mult);
+  const unit = (total/qty).toFixed(2);
+  const colorLabel = color === '4' ? '4 สี (เต็มสี)' : '1 สี (ขาวดำ)';
+  showResult([
+    ['ประเภท', p.label],
+    ['จำนวน', qty.toLocaleString()+' '+p.unit],
+    ['การพิมพ์', colorLabel],
+  ], total, `${parseFloat(unit).toLocaleString()} บาท/${p.unit}`,
+  '', `สอบถามราคา${p.label} จำนวน ${qty} ${p.unit} ${colorLabel}`);
+}
+
+function calcBook() {
+  const type = document.getElementById('type').value;
+  const size = type === 'book_a4' ? 'A4' : 'A5';
+  const pages = parseInt(document.getElementById('pages') ? document.getElementById('pages').value : 32) || 32;
+  const qty = parseInt(document.getElementById('qty').value) || 100;
+  const cover = document.getElementById('cover') ? document.getElementById('cover').value : 'staple';
+  const color = document.getElementById('color') ? document.getElementById('color').value : '4';
+  const colorMult = color === '1' ? 0.7 : 1;
+  const pageCost = size === 'A4' ? 0.8 : 0.6;
+  const baseCover = cover === 'hard' ? 1500 : cover === 'soft' ? 800 : 400;
+  const inner = Math.round(pages * pageCost * qty * colorMult);
+  const coverCost = Math.round(baseCover + qty * (cover === 'hard' ? 15 : 8));
+  const plate = pages <= 16 ? 1200 : pages <= 32 ? 2000 : pages <= 64 ? 3500 : 5000;
+  const total = inner + coverCost + plate;
+  const coverLabel = cover === 'hard' ? 'ปกแข็ง' : cover === 'soft' ? 'ปกอ่อนเคลือบ' : 'เย็บลวด';
+  const colorLabel = color === '4' ? '4 สี' : 'ขาวดำ';
+  showResult([
+    ['ประเภท', `หนังสือ ${size} ${pages} หน้า`],
+    ['จำนวน', qty.toLocaleString()+' เล่ม'],
+    ['ปก', coverLabel+' / '+colorLabel],
+    ['ค่าเพลท', plate.toLocaleString()+' บาท'],
+    ['ค่าพิมพ์เนื้อใน', inner.toLocaleString()+' บาท'],
+    ['ค่าปก + เข้าเล่ม', coverCost.toLocaleString()+' บาท'],
+  ], total, `${Math.round(total/qty).toLocaleString()} บาท/เล่ม`,
+  '', `สอบถามราคาหนังสือ ${size} ${pages} หน้า จำนวน ${qty} เล่ม ${colorLabel} ${coverLabel}`);
+}
+
+function calcBanner() {
+  const w = parseFloat(document.getElementById('bw') ? document.getElementById('bw').value : 1) || 1;
+  const h = parseFloat(document.getElementById('bh') ? document.getElementById('bh').value : 2) || 2;
+  const total = Math.round(w * h * 300);
+  showResult([
+    ['ขนาด', `${w}×${h} เมตร`],
+    ['พื้นที่', `${(w*h).toFixed(2)} ตร.ม.`],
+    ['อัตรา', '300 บาท/ตร.ม.'],
+  ], total, `${(total/(w*h)).toFixed(0)} บาท/ตร.ม.`,
+  '', `สอบถามราคาแบนเนอร์ขนาด ${w}x${h} เมตร`);
+}
+
+function updateForm() {
+  const type = document.getElementById('type').value;
+  const extra = document.getElementById('extra-fields');
+  const colorGroup = document.getElementById('color-group');
+  const qtyGroup = document.getElementById('qty-group');
+  const qtyLabel = document.getElementById('qty-label');
+  const specBox = document.getElementById('spec-box');
+  extra.innerHTML = '';
+  colorGroup.style.display = 'flex'; colorGroup.style.flexDirection = 'column';
+  qtyGroup.style.display = 'flex'; qtyGroup.style.flexDirection = 'column';
+
+  if (type === 'book_a4' || type === 'book_a5') {
+    const size = type === 'book_a4' ? 'A4' : 'A5';
+    extra.innerHTML = `
+      <div class="form-row" style="margin-bottom:14px">
+        <div class="form-group">
+          <label>จำนวนหน้า (รวมปก)</label>
+          <input type="number" id="pages" value="32" min="8" step="4" oninput="calculate()" />
+        </div>
+        <div class="form-group">
+          <label>ประเภทปก</label>
+          <select id="cover" onchange="calculate()">
+            <option value="staple">เย็บลวด</option>
+            <option value="soft">ปกอ่อน เคลือบด้าน</option>
+            <option value="hard">ปกแข็ง</option>
+          </select>
+        </div>
+      </div>`;
+    qtyLabel.textContent = 'จำนวนพิมพ์ (เล่ม)';
+    specBox.textContent = `หนังสือ ${size} — กระดาษออฟเซ็ท 80g เนื้อใน / ปกอาร์ต 250g`;
+  } else if (type === 'banner') {
+    extra.innerHTML = `
+      <div class="form-row" style="margin-bottom:14px">
+        <div class="form-group">
+          <label>กว้าง (เมตร)</label>
+          <input type="number" id="bw" value="1" min="0.5" step="0.5" oninput="calculate()" />
+        </div>
+        <div class="form-group">
+          <label>ยาว/สูง (เมตร)</label>
+          <input type="number" id="bh" value="2" min="0.5" step="0.5" oninput="calculate()" />
+        </div>
+      </div>`;
+    colorGroup.style.display = 'none';
+    qtyGroup.style.display = 'none';
+    specBox.textContent = 'ผ้าไวนิล 440g พิมพ์ 4 สี ราคา 300 บาท/ตร.ม.';
+  } else {
+    const p = prices[type];
+    if (p) { specBox.textContent = p.spec; qtyLabel.textContent = `จำนวน (${p.unit})`; }
+    if (type === 'tshirt' || type === 'bag') colorGroup.style.display = 'none';
+  }
+  calculate();
+}
+
+updateForm();
+</script>
+</body>
+</html>
