@@ -83,6 +83,11 @@
         </optgroup>
         <optgroup label="🖥️ งานออนดีมานด์">
           <option value="sticker">สติ๊กเกอร์ตัดรูป</option>
+         <option value="print_a3_single">ปริ้น A3 หน้าเดียว</option>
+         <option value="print_a3_double">ปริ้น A3 สองหน้า</option>
+        <option value="glass_coffee">สกรีนแก้วกาแฟ 16 ออนซ์</option>
+        <option value="card_single">การ์ดหน้าเดียว</option>
+       <option value="card_double">การ์ดสองหน้า</option>
           <option value="banner">แบนเนอร์ไวนิล</option>
         </optgroup>
         <optgroup label="🎨 งานซิลก์สกรีน">
@@ -135,7 +140,11 @@ const prices = {
   label: { label:'ฉลากสินค้า', unit:'ชิ้น', tiers:[[1000,1500],[5000,4500],[10000,7500]], spec:'กระดาษสติ๊กเกอร์ 4 สี กำหนดขนาดเอง' },
   sticker: { label:'สติ๊กเกอร์ตัดรูป', unit:'ชิ้น', tiers:[[10,400],[50,1500],[100,2500],[500,8000]], spec:'กระดาษ PVC กันน้ำ ตัดรูปตามแบบ ขนาดไม่เกิน A4' },
   tshirt: { label:'เสื้อยืดสกรีน', unit:'ตัว', tiers:[[12,3600],[24,6000],[50,10000],[100,18000]], spec:'Cotton 100% สกรีน 1 สี ราคารวมค่าเสื้อ' },
-  bag: { label:'ถุงผ้าสกรีน', unit:'ใบ', tiers:[[50,4500],[100,7000],[200,12000]], spec:'Canvas สกรีน 1 สี ขนาด 35×40 ซม.' },
+  bag: { label:'ถุงผ้าสกรีน', unit:'ใบ', tiers:[[50,4500],[100,7000],[200,12000]], spec:'Canvas สกรีน 1 สี ขนาด 35×40 ซม.' },glass_coffee: { label:'สกรีนแก้วกาแฟ 16 ออนซ์', unit:'ใบ', tiers:[[1,2.50],[10,25],[50,125],[100,250]], spec:'ไม่รวมฝา ราคาต่อใบ 2.50 บาท' },
+    print_a3_single: { label:'ปริ้น A3 หน้าเดียว', unit:'แผ่น', tiers:[[1,10],[10,100],[50,500],[100,1000]], spec:'ไม่เคลือบ ราคาต่อแผ่น 10 บาท' },
+    print_a3_double: { label:'ปริ้น A3 สองหน้า', unit:'แผ่น', tiers:[[1,20],[10,200],[50,1000],[100,2000]], spec:'ไม่เคลือบ ราคาต่อแผ่น 20 บาท' },
+    card_single: { label:'การ์ดหน้าเดียว', unit:'ใบ', tiers:[[1,5],[10,50],[50,250],[100,500]], spec:'การ์ดแต่งงาน การ์ดเชิญ ราคาต่อใบ 5 บาท' },
+    card_double: { label:'การ์ดสองหน้า', unit:'ใบ', tiers:[[1,7],[10,70],[50,350],[100,700]], spec:'การ์ดแต่งงาน การ์ดเชิญ ราคาต่อใบ 7 บาท' },
 };
 
 function interp(tiers, qty) {
